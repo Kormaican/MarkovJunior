@@ -4,67 +4,66 @@ using System;
 using System.IO;
 using System.Text;
 using System.Collections.Generic;
+using System.Linq;
 
-static class VoxHelper
-{
-    public static (int[], int, int, int) LoadVox(string filename)
-    {
-        try
-        {
+static class VoxHelper {
+    public static (int[], int, int, int) LoadVox(string filename) {
+        int[] result = null;
+        
+        try {
             using FileStream file = File.Open(filename, FileMode.Open);
             var stream = new BinaryReader(file);
 
-            int[] result = null;
-            int MX = -1, MY = -1, MZ = -1;
+            int mX = -1, mY = -1, mZ = -1;
 
             string magic = new(stream.ReadChars(4));
             int version = stream.ReadInt32();
+            
+            while (stream.BaseStream.Position < stream.BaseStream.Length) {
+                string tag = Encoding.ASCII.GetString(stream.ReadBytes(4));
+                
+                int chunkBytes = stream.ReadInt32();
+                int childBytes = stream.ReadInt32();
 
-            while (stream.BaseStream.Position < stream.BaseStream.Length)
-            {
-                byte[] bt = stream.ReadBytes(1);
-                char head = Encoding.ASCII.GetChars(bt)[0];
-
-                if (head == 'S')
-                {
-                    string tail = Encoding.ASCII.GetString(stream.ReadBytes(3));
-                    if (tail != "IZE") continue;
-
-                    int chunkSize = stream.ReadInt32();
-                    stream.ReadBytes(4);
-                    //Console.WriteLine("found SIZE chunk");
-                    MX = stream.ReadInt32();
-                    MY = stream.ReadInt32();
-                    MZ = stream.ReadInt32();
-                    stream.ReadBytes(chunkSize - 4 * 3);
-                    //Console.WriteLine($"size = ({MX}, {MY}, {MZ})");
-                }
-                else if (head == 'X')
-                {
-                    string tail = Encoding.ASCII.GetString(stream.ReadBytes(3));
-                    if (tail != "YZI") continue;
-
-                    if (MX <= 0 || MY <= 0 || MZ <= 0) return (null, MX, MY, MZ);
-                    result = new int[MX * MY * MZ];
-                    for (int i = 0; i < result.Length; i++) result[i] = -1;
-
-                    //Console.WriteLine("found XYZI chunk");
-                    stream.ReadBytes(8);
+                if (tag.Equals("MAIN"))
+                    continue;
+                if (tag.Equals("PACK")) {
+                    int modelCount = stream.ReadInt32();
+                } else if (tag.Equals("SIZE")) {
+                    mX = stream.ReadInt32();
+                    mY = stream.ReadInt32();
+                    mZ = stream.ReadInt32();
+                    result = new int[mX * mY * mZ];
+                } else if (tag.Equals("XYZI")) {
                     int numVoxels = stream.ReadInt32();
-                    //Console.WriteLine($"number of voxels = {numVoxels}");
-                    for (int i = 0; i < numVoxels; i++)
-                    {
+                    for (int i = 0; i < numVoxels; i++) {
                         byte x = stream.ReadByte();
                         byte y = stream.ReadByte();
                         byte z = stream.ReadByte();
                         byte color = stream.ReadByte();
-                        result[x + y * MX + z * MX * MY] = color;
-                        //Console.WriteLine($"adding voxel {x} {y} {z} of color {color}");
+                        result[x + y * mX + z * mX * mY] = color;
+                        // Console.WriteLine($"adding voxel {x} {y} {z} of color {color}");
                     }
+                } else if (tag.Equals("RGBA")) {
+                    int[] palette = new int[256];
+                    byte r, g, b;
+                    int color;
+                    for (int i = 0; i < palette.Length; i++) {
+                        r = stream.ReadByte();
+                        g = stream.ReadByte();
+                        b = stream.ReadByte();
+                        color = stream.ReadByte();
+                        color |= b << 8;
+                        color |= g << 16;
+                        color |= r << 24;
+                        palette.Append(color);
+                    }
+                } else {
+                    stream.ReadBytes(chunkBytes);
                 }
             }
             file.Close();
-            return (result, MX, MY, MZ);
+            return (result, mX, mY, mZ);
         }
         catch (Exception) { return (null, -1, -1, -1); }
     }
@@ -84,52 +83,51 @@ static class VoxHelper
         using BinaryWriter stream = new(file);
 
         stream.WriteString("VOX ");
-        stream.Write(150);
+        stream.Write(150); // Version must always be 150
 
         stream.WriteString("MAIN");
-        stream.Write(0);
-        stream.Write(1092 + voxels.Count * 4);
+        stream.Write(0); // Main has no content
+        stream.Write(1092 + voxels.Count * 4); // Child Size in Bytes
 
         stream.WriteString("PACK");
-        stream.Write(4);
-        stream.Write(0);
-        stream.Write(1);
+        stream.Write(4); // Size of Int
+        stream.Write(0); // No Children
+        stream.Write(1); // Only 1 model
 
         stream.WriteString("SIZE");
-        stream.Write(12);
-        stream.Write(0);
-        stream.Write((int)MX);
-        stream.Write((int)MY);
-        stream.Write((int)MZ);
+        stream.Write(12); // Size of 3 Ints
+        stream.Write(0); // No Children
+        stream.Write((int)MX); // Model Width
+        stream.Write((int)MY); // Model Length
+        stream.Write((int)MZ); // Model Height
 
         stream.WriteString("XYZI");
-        stream.Write(4 + voxels.Count * 4);
-        stream.Write(0);
-        stream.Write(voxels.Count);
+        stream.Write(4 + voxels.Count * 4); // Size of Voxels and length
+        stream.Write(0); // No Children
+        stream.Write(voxels.Count); // Amount of voxels / points
 
-        foreach (var (x, y, z, color) in voxels)
-        {
-            stream.Write(x);
+        foreach (var (x, y, z, color) in voxels) {
+            stream.Write(x); // X Coord
             //stream.Write((byte)(size.y - v.y - 1));
-            stream.Write(y);
-            stream.Write(z);
-            stream.Write(color);
+            stream.Write(y); // Y Coord
+            stream.Write(z); // Z Coord
+            stream.Write(color); // Color Palette Index
         }
 
         stream.WriteString("RGBA");
-        stream.Write(1024);
-        stream.Write(0);
+        stream.Write(1024); // Always 256 Colors
+        stream.Write(0); // No Children
 
-        foreach (int c in palette)
-        {
+        foreach (int c in palette) {
             //(byte R, byte G, byte B) = c.ToTuple();
-            stream.Write((byte)((c & 0xff0000) >> 16));
-            stream.Write((byte)((c & 0xff00) >> 8));
-            stream.Write((byte)(c & 0xff));
-            stream.Write((byte)0);
+            stream.Write((byte)((c & 0xff0000) >> 16)); // r
+            stream.Write((byte)((c & 0xff00) >> 8)); // g
+            stream.Write((byte)(c & 0xff)); // b
+            stream.Write((byte)0); // a
         }
-        for (int i = palette.Length; i < 255; i++)
-        {
+        
+        // Fill the palette with blanks
+        for (int i = palette.Length; i < 256; i++) {
             stream.Write((byte)(0xff - i - 1));
             stream.Write((byte)(0xff - i - 1));
             stream.Write((byte)(0xff - i - 1));
