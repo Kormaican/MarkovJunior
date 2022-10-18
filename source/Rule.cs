@@ -184,6 +184,24 @@ class Rule
         string foutString = xelem.Get<string>("fout", null);
         string fileString = xelem.Get<string>("file", null);
         string legend = xelem.Get<string>("legend", null);
+        string inlegend = xelem.Get<string>("inlegend", null);
+        string outlegend = xelem.Get<string>("outlegend", null);
+
+        if(legend != null)
+        {
+            if(inlegend != null || outlegend != null)
+            {
+                Interpreter.WriteLine($"legend is defined when inlegend or outlegend is also defined at line {lineNumber}");
+                return null;
+            }
+            if(fileString != null)
+            {
+                Interpreter.WriteLine($"inlegend or outlegend cannot be defined with file= at line {lineNumber}");
+                return null;
+            }
+            inlegend = legend;
+            outlegend = legend;
+        }
 
         char[] inRect, outRect;
         int IMX = -1, IMY = -1, IMZ = -1, OMX = -1, OMY = -1, OMZ = -1;
@@ -200,14 +218,14 @@ class Rule
                 return null;
             }
 
-            (inRect, IMX, IMY, IMZ) = inString != null ? Parse(inString) : LoadResource(filepath(finString), legend, gin.MZ == 1);
+            (inRect, IMX, IMY, IMZ) = inString != null ? Parse(inString) : LoadResource(filepath(finString), inlegend, gin.MZ == 1);
             if (inRect == null)
             {
                 Interpreter.WriteLine($" in input at line {lineNumber}");
                 return null;
             }
 
-            (outRect, OMX, OMY, OMZ) = outString != null ? Parse(outString) : LoadResource(filepath(foutString), legend, gin.MZ == 1);
+            (outRect, OMX, OMY, OMZ) = outString != null ? Parse(outString) : LoadResource(filepath(foutString), outlegend, gin.MZ == 1);
             if (outRect == null)
             {
                 Interpreter.WriteLine($" in output at line {lineNumber}");

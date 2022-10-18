@@ -1,0 +1,18 @@
+<sequence values="BWN" symmetry="(xy)" folder = "ModernHouseMOD2">
+        <!--<one in = "B" out = "W" />-->
+
+<!--        <one in = "*********/*********/*********/*********/*********/*********/*********/*********/********* *********/*********/*********/*********/*********/*********/*********/*********/********* *********/*********/*********/*********/*********/*********/*********/*********/********* *********/*********/*********/*********/*********/*********/*********/*********/*********"-->
+<!--             fout = "Test1" legend = "BW" steps = "1"/>-->
+
+        <!--<one fin = "Test1" out = "BBBBBBBBB/**WWWW***/BBBBBBBBB/BBBBBBBBB/BBBBBBBBB/BBBBBBBBB/BBBBBBBBB/BBBBBBBBB/BBBBBBBBB BBBBBBBBB/BBBBBBBBB/BBBBBBBBB/BBBBBBBBB/BBBBBBBBB/BBBBBBBBB/BBBBBBBBB/BBBBBBBBB/BBBBBBBBB BBBBBBBBB/BBBBBBBBB/BBBBBBBBB/BBBBBBBBB/BBBBBBBBB/BBBBBBBBB/BBBBBBBBB/BBBBBBBBB/BBBBBBBBB BBBBBBBBB/BBBBBBBBB/BBBBBBBBB/BBBBBBBBB/BBBBBBBBB/BBBBBBBBB/BBBBBBBBB/BBBBBBBBB/BBBBBBBBB"
+            legend = "W" />-->
+
+	    <one fin ="Empty1" inlegend="B" fout="Test1" outlegend ="WB" steps ="1"/>
+
+
+<!--    <map scale="9 9 4"  values = "BW" outputValues= "BW" folder = "ModernHouseMOD2" regular="False">-->
+<!--         -->
+
+<!--     </map>-->
+
+</sequence>

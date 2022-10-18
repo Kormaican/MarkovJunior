@@ -9,10 +9,12 @@
 
 	<model name="Backtracker" size="89"/> --><!--Just using these as file seperaters-->
 	
-	<model name="Apartemazements" length="8" width="8" height="8" amount="10"/>
+	<!--<model name="Apartemazements" length="8" width="8" height="8" amount="10"/>
 	<model name="CarmaTower" length="8" width="8" height="8" amount="10"/>
-	<model name="SeaVilla" length="8" width="8" height="8" amount="10"/>
+	<model name="SeaVilla" length="8" width="8" height="8" amount="10"/>-->
 	<!--<model name="ModernHouse" length="8" width="8" height="8" amount="4"/>-->
+
+	<model name="ModernHouseMOD2" length="9" width="9" height="4" amount="4"/>
 
 	<!--<model name="Backtracker" size="89"/> Just using these as file seperaters--><!--
 
