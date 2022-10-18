@@ -8,8 +8,19 @@ using System.Collections.Generic;
 
 static class Program
 {
-    static void Main()
+    static void Main(string[] args)
     {
+        // Added by Adam Albanese @Kormaican to allow adding the models.xml filename as an argument (so it is read, not built into the program)
+        string models_xml;
+        if (args.Length == 0)
+        {
+            models_xml = "models.xml";
+        }
+        else
+        {
+            models_xml = args[0];
+        }
+
         Stopwatch sw = Stopwatch.StartNew();
         var folder = System.IO.Directory.CreateDirectory("output");
         foreach (var file in folder.GetFiles()) file.Delete();
@@ -17,7 +28,8 @@ static class Program
         Dictionary<char, int> palette = XDocument.Load("resources/palette.xml").Root.Elements("color").ToDictionary(x => x.Get<char>("symbol"), x => (255 << 24) + Convert.ToInt32(x.Get<string>("value"), 16));
 
         Random meta = new();
-        XDocument xdoc = XDocument.Load("models.xml", LoadOptions.SetLineInfo);
+
+        XDocument xdoc = XDocument.Load(models_xml, LoadOptions.SetLineInfo);
         foreach (XElement xmodel in xdoc.Root.Elements("model"))
         {
             string name = xmodel.Get<string>("name");

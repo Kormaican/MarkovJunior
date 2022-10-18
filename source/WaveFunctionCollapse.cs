@@ -31,7 +31,7 @@ abstract class WFCNode : Branch
     override protected bool Load(XElement xelem, bool[] parentSymmetry, Grid grid)
     {
         shannon = xelem.Get("shannon", false);
-        tries = xelem.Get("tries", 1000);
+        tries = xelem.Get("tries",100);  /* edits made by Adam Albanese @Kormaican to number of tries*/
 
         wave = new Wave(grid.state.Length, P, propagator.Length, shannon);
         startwave = new Wave(grid.state.Length, P, propagator.Length, shannon);

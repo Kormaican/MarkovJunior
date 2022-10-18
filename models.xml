@@ -1,13 +1,49 @@
 <models>
-  <model name="Apartemazements" size="8" d="3" amount="4"/>
-  <model name="Apartemazements" size="8" d="3" iso="True" pixelsize="6" gui="150"/>
-  <model name="CarmaTower" length="12" width="12" height="18"/>
-  <model name="CarmaTower" length="12" width="12" height="18" iso="True" amount="1"/>
-  <model name="ModernHouse" length="9" width="9" height="4" amount="4"/>
-  <model name="ModernHouse" length="9" width="9" height="4" iso="True"/>
-  <model name="SeaVilla" length="10" width="10" height="4" amount="4"/>
-  <model name="SeaVilla" length="10" width="10" height="4" iso="True"/>
-  <model name="Island" size="800" steps="-1" pixelsize="1">
+	
+  <!--For Adam's Architecture Studio class-->
+
+	<!--<model name="ModernHouse" length="6" width="6" height="6" amount="4"/>
+	<model name="Apartemazements" length="6" width="6" height="6" amount="4"/>
+	<model name="CarmaTower" length="6" width="6" height="6" amount="4"/>
+	<model name="SeaVilla" length="6" width="6" height="6" amount="4"/>
+
+	<model name="Backtracker" size="89"/> --><!--Just using these as file seperaters-->
+	
+	<model name="Apartemazements" length="8" width="8" height="8" amount="10"/>
+	<model name="CarmaTower" length="8" width="8" height="8" amount="10"/>
+	<model name="SeaVilla" length="8" width="8" height="8" amount="10"/>
+	<!--<model name="ModernHouse" length="8" width="8" height="8" amount="4"/>-->
+
+	<!--<model name="Backtracker" size="89"/> Just using these as file seperaters--><!--
+
+	<model name="ModernHouse" length="10" width="10" height="10" amount="4"/>
+	<model name="Apartemazements" length="10" width="10" height="10" amount="4"/>
+	<model name="CarmaTower" length="10" width="10" height="10" amount="4"/>
+	<model name="SeaVilla" length="10" width="10" height="10" amount="4"/>-->
+
+	<!--<model name="ModernHouse" length="9" width="9" height="4" amount="10"/>-->
+
+	<!--<model name="Backtracker" size="89" /> Just using these as file seperaters
+
+	--><!--20 seems to be too big-->
+
+	<!--<model name="ModernHouse" length="20" width="20" height="20" amount="4"/>
+	<model name="Apartemazements" length="20" width="20" height="20" amount="4"/>
+	<model name="CarmaTower" length="20" width="20" height="20" amount="4"/>
+	<model name="SeaVilla" length="20" width="20" height="20" amount="4"/>
+	<model name="ModernHouse" length="20" width="20" height="20" amount="4"/>-->
+  <!--END of for Adam's Architecture Studio class-->
+	
+	
+  <!--<model name="Apartemazements" size="8" d="3" amount="4"/>-->
+  <!--<model name="Apartemazements" size="8" d="3" iso="True" pixelsize="6" gui="150"/>-->
+  <!--<model name="CarmaTower" length="12" width="12" height="18"/>
+  <model name="CarmaTower" length="12" width="12" height="18" iso="True" amount="1"/>-->
+  <!--<model name="ModernHouse" length="9" width="9" height="4" amount="4"/> --> <!--This one exports Voxels-->
+  <!--<model name="ModernHouse" length="9" width="9" height="4" iso="True"/>
+  <model name="SeaVilla" length="10" width="10" height="4" amount="4"/>-->
+  <!--<model name="SeaVilla" length="10" width="10" height="4" iso="True"/>-->
+  <!--<model name="Island" size="800" steps="-1" pixelsize="1">
     <color symbol="I" value="abcbe8" comment="sea"/>
     <color symbol="U" value="cee6f9" comment="coast and lakes"/>
     <color symbol="T" value="2b8aa9" comment="rivers"/>
@@ -160,12 +196,14 @@
   <model name="WaveBrickWall" size="50"/>
   <model name="WaveDungeon" size="50"/>
   <model name="WaveFlowers" size="60"/>
-  <model name="WolfBasedApproach" size="70" steps="300"/>
+  <model name="WolfBasedApproach" size="70" steps="300"/>-->
   
   gifs
   <!--<model name="Wilson" size="59" steps="1000" gui="150" gif="True"/>-->
   <!--<model name="BasicSnake" size="23" steps="100" gif="True"/>-->
   <!--<model name="Chase" size="60" steps="200" gif="True"/>-->
+
+	<!--<model name="ModernHouse" length="9" width="9" height="4" iso="True" gif ="True"/>-->
 
   <!--<model name="MultiSokoban9" size="9" amount="1" pixelsize="20" gif="True"/>-->
   <!--<model name="MultiSokoban8" size="8" amount="1" pixelsize="20" gif="True"/>-->
