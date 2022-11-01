@@ -2,6 +2,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 static class Helper
 {
@@ -22,6 +23,65 @@ static class Helper
         }
         return (result, uniques.Count);
     }
+
+    public static (byte[], int) Ords2(this int[] data, List<int> uniques = null)
+    {
+        byte[] result = new byte[data.Length];
+        if (uniques == null) uniques = new List<int>();
+
+        // Set all Uniques to the index value
+        for (int i = 0; i < uniques.Count; i++)
+        {
+            uniques[i] = i;
+        }
+
+        // Track indices of uniques that has at least one data match
+        int[] unIndicesA = new int[uniques.Count]; // Automatically all set to 0
+        List<int> unIndices = unIndicesA.ToList();
+
+        for (int i = 0; i < data.Length; i++)
+        {
+            int d = data[i];
+            int ord = uniques.IndexOf(d);
+            if (ord == -1)
+            {
+                ord = uniques.Count;
+                uniques.Add(d);
+                unIndices.Add(1);
+            }
+            else
+            {
+                unIndices[ord]++;
+            }
+                
+            //result[i] = (byte)ord;
+        }
+
+        // Now remove unused indices in uniques
+        for (int i = uniques.Count-1; i>=0; i--)
+        {
+            if(unIndices[i]==0)
+            {
+                uniques.RemoveAt(i);
+            }
+        }
+
+        // Re step through data to set result according to new pruned uniques
+        for (int i = 0; i < data.Length; i++)
+        {
+            int d = data[i];
+            int ord = uniques.IndexOf(d);
+            if (ord == -1)
+            {
+                ord = uniques.Count;
+                uniques.Add(d);
+            }
+            result[i] = (byte)ord;
+        }
+
+        return (result, uniques.Count);
+    }
+
 
     public static string[][] Split(this string s, char S1, char S2)
     {

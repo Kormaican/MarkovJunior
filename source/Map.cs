@@ -47,7 +47,7 @@ class MapNode : Branch
         List<Rule> ruleList = new();
         foreach (XElement xrule in xelem.Elements("rule"))
         {
-            Rule rule = Rule.Load(xrule, grid, newgrid);
+            Rule rule = Rule.Load(xrule, grid, newgrid); //TODO - Change to Load2 (include the palette)
             rule.original = true;
             if (rule == null) return false;
             foreach (Rule r in rule.Symmetries(symmetry, grid.MZ == 1)) ruleList.Add(r);

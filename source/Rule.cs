@@ -3,6 +3,7 @@
 using System.Linq;
 using System.Xml.Linq;
 using System.Collections.Generic;
+using System;
 
 class Rule
 {
@@ -135,6 +136,68 @@ class Rule
         return (ords.Select(o => legend[o]).ToArray(), MX, MY, MZ);
     }
 
+
+    // Helper for LoadResource2
+    private static (int[] data, int MX, int MY, int MZ, int[] emptyPalette) addEmptyPalette((int[] data_p, int MX_p, int MY_p, int MZ_p) tup_p)
+    {
+    
+        return (tup_p.data_p, tup_p.MX_p, tup_p.MY_p, tup_p.MZ_p, null);
+    }
+
+    // Resort Legend
+    //public static string resortLegend(string oldLegend, int[] Mpalette)
+    //{
+    //    string newLegend = "";
+
+    //    for (int i = 0; i < Mpalette.Length; i++)
+    //    {
+    //        // for each color in Mpalette:
+    //        // Check if the color is in the legend.
+    //        // If so, add the associated character to the end of the new string
+            
+    //        // TODO
+    //        if (VoxHelper.paletteGlobalSwapped.ContainsKey( Mpalette[i]) 
+    //            && oldLegend.Contains(VoxHelper.paletteGlobalSwapped[Mpalette[i]]))
+    //        {
+    //            newLegend = newLegend + VoxHelper.paletteGlobalSwapped[Mpalette[i]];
+    //        }
+    //    }
+
+    //    // TODO - 
+    //    return oldLegend;
+    //}
+
+
+    // Allows the legend to be in the order of the pallete, and include all colors in the palette
+    public static (char[] data, int MX, int MY, int MZ) LoadResource2(string filename, string legend, bool d2)
+    {
+        if (legend == null)
+        {
+            Interpreter.WriteLine($"no legend for {filename}");
+            return (null, -1, -1, -1);
+        }
+        (int[] data, int MX, int MY, int MZ, int[] Mpalette) = d2 ? addEmptyPalette((Graphics.LoadBitmap(filename))) : VoxHelper.LoadVox2(filename);
+        if (data == null)
+        {
+            Interpreter.WriteLine($"couldn't read {filename}");
+            return (null, MX, MY, MZ);
+        }
+
+        //List<int> NewMpalette = Mpalette.ToList().GetRange(0, legend.Length);
+
+        (byte[] ords, int amount) = data.Ords2(Mpalette.ToList());
+        if (amount > legend.Length)
+        {
+            Interpreter.WriteLine($"the amount of colors {amount} in {filename} is more than {legend.Length}");
+            return (null, MX, MY, MZ);
+        }
+
+        // Re-sort the legend to be correlated to the same order as the colors
+        //legend = resortLegend(legend, Mpalette);
+
+        return (ords.Select(o => legend[o]).ToArray(), MX, MY, MZ);
+    }
+
     static (char[], int, int, int) Parse(string s)
     {
         string[][] lines = Helper.Split(s, ' ', '/');
@@ -194,13 +257,15 @@ class Rule
                 Interpreter.WriteLine($"legend is defined when inlegend or outlegend is also defined at line {lineNumber}");
                 return null;
             }
-            if(fileString != null)
-            {
-                Interpreter.WriteLine($"inlegend or outlegend cannot be defined with file= at line {lineNumber}");
-                return null;
-            }
+
+            
             inlegend = legend;
             outlegend = legend;
+        }
+        else if (fileString != null && (inlegend != null || outlegend != null))
+        {
+            Interpreter.WriteLine($"inlegend or outlegend cannot be defined with file= at line {lineNumber}");
+            return null;
         }
 
         char[] inRect, outRect;
@@ -218,14 +283,14 @@ class Rule
                 return null;
             }
 
-            (inRect, IMX, IMY, IMZ) = inString != null ? Parse(inString) : LoadResource(filepath(finString), inlegend, gin.MZ == 1);
+            (inRect, IMX, IMY, IMZ) = inString != null ? Parse(inString) : LoadResource2(filepath(finString), inlegend, gin.MZ == 1);
             if (inRect == null)
             {
                 Interpreter.WriteLine($" in input at line {lineNumber}");
                 return null;
             }
 
-            (outRect, OMX, OMY, OMZ) = outString != null ? Parse(outString) : LoadResource(filepath(foutString), outlegend, gin.MZ == 1);
+            (outRect, OMX, OMY, OMZ) = outString != null ? Parse(outString) : LoadResource2(filepath(foutString), outlegend, gin.MZ == 1);
             if (outRect == null)
             {
                 Interpreter.WriteLine($" in output at line {lineNumber}");

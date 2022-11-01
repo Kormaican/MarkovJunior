@@ -1,12 +1,21 @@
 ﻿// Copyright (C) 2022 Maxim Gumin, The MIT License (MIT)
+// Edited by Adam Albanese @Kormaican
 
 using System;
 using System.IO;
 using System.Text;
 using System.Collections.Generic;
 using System.Linq;
+using System.Xml.Linq;
 
 static class VoxHelper {
+
+    // If there are issues regarding palettes, then possibly look into customPalette in Program.Main
+    public static Dictionary<char, int> paletteGlobal = XDocument.Load("resources/palette.xml").Root.Elements("color").ToDictionary(x => x.Get<char>("symbol"), x => (255 << 24) + Convert.ToInt32(x.Get<string>("value"), 16));
+    
+    // This is swapped from above, so color ints are the index and chars are the values
+    public static Dictionary<int, char> paletteGlobalSwapped = XDocument.Load("resources/palette.xml").Root.Elements("color").ToDictionary(x => (255 << 24) + Convert.ToInt32(x.Get<string>("value"), 16), x => x.Get<char>("symbol"));
+
     public static (int[], int, int, int) LoadVox(string filename) {
         int[] result = null;
         
@@ -66,6 +75,90 @@ static class VoxHelper {
             return (result, mX, mY, mZ);
         }
         catch (Exception) { return (null, -1, -1, -1); }
+    }
+
+
+    //Added by Adam Albanese @Kormaican 
+    // Returns Palette also
+    public static (int[], int, int, int, int[]) LoadVox2(string filename)
+    {
+        int[] result = null;
+
+        try
+        {
+            using FileStream file = File.Open(filename, FileMode.Open);
+            var stream = new BinaryReader(file);
+
+            int mX = -1, mY = -1, mZ = -1;
+
+            string magic = new(stream.ReadChars(4));
+            int version = stream.ReadInt32();
+
+            int[] palette_list = new int[256];
+
+            while (stream.BaseStream.Position < stream.BaseStream.Length)
+            {
+                string tag = Encoding.ASCII.GetString(stream.ReadBytes(4));
+
+                int chunkBytes = stream.ReadInt32();
+                int childBytes = stream.ReadInt32();
+
+                
+
+                if (tag.Equals("MAIN"))
+                    continue;
+                if (tag.Equals("PACK"))
+                {
+                    int modelCount = stream.ReadInt32();
+                }
+                else if (tag.Equals("SIZE"))
+                {
+                    mX = stream.ReadInt32();
+                    mY = stream.ReadInt32();
+                    mZ = stream.ReadInt32();
+                    result = new int[mX * mY * mZ];
+                }
+                else if (tag.Equals("XYZI"))
+                {
+                    int numVoxels = stream.ReadInt32();
+                    for (int i = 0; i < numVoxels; i++)
+                    {
+                        byte x = stream.ReadByte();
+                        byte y = stream.ReadByte();
+                        byte z = stream.ReadByte();
+                        byte color = stream.ReadByte();
+                        result[x + y * mX + z * mX * mY] = color;
+                        // Console.WriteLine($"adding voxel {x} {y} {z} of color {color}");
+                    }
+                }
+                else if (tag.Equals("RGBA"))
+                {
+                    int[] palette = new int[256];
+                    byte r, g, b;
+                    int color;
+                    for (int i = 0; i < palette.Length; i++)
+                    {
+                        r = stream.ReadByte();
+                        g = stream.ReadByte();
+                        b = stream.ReadByte();
+                        color = stream.ReadByte();
+                        color |= b << 8;
+                        color |= g << 16;
+                        color |= r << 24;
+                        palette.Append(color); // Not sure what this line was for. Maybe it was stale code?
+                        palette_list[i] = color;
+                    }
+
+                }
+                else
+                {
+                    stream.ReadBytes(chunkBytes);
+                }
+            }
+            file.Close();
+            return (result, mX, mY, mZ, palette_list);
+        }
+        catch (Exception) { return (null, -1, -1, -1, null); }
     }
 
     static void WriteString(this BinaryWriter stream, string s) { foreach (char c in s) stream.Write(c); }
