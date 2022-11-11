@@ -1,4 +1,4 @@
-<sequence values="BWNMmTyKYRALkFGCcXwJoHfaZEhldUOg" symmetry="(xy)" folder = "ModernHouseMOD2">
+<sequence values="BlWdUONgJoH faZEhLkFGCc XwMmTyKYR" outputValues="BlWdUONgJoH faZEhLkFGCc XwMmTyKYR" transparent="T" symmetry="(xy)" folder = "ModernHouseMOD2">
 
 	<!--        TODO - You need to know which one is which coming in, so that the order is correct. Otherwise void blocks and non-void blocks (or any color) will get swapped around.-->
 	<!--        <one fin = "EmptyModernHouse" inlegend = "B"-->
@@ -10,10 +10,27 @@
 	<!--<one fin = "EmptyModernHouse" inlegend = "B"
 		 fout = "ModernHouseMOD1_73618823" outlegend = "BWNMmTyKYRXAD"/>-->
 
-	<one fin = "EmptyModernHouse" inlegend = "B"
-		 fout = "ModernHouseMOD1_73618823" outlegend = "BlWdUONgJoHfaZEhLkFGCcXwMmTyKYR"/>
 
-	<one fin = "corner" inlegend = "BN" fout = "corner_new" outlegend="BN"/>
+	<!--<one fin = "EmptyModernHouse" inlegend = "B"
+		 fout = "ModernHouseMOD1_800969077" outlegend = "BlWdUONgJoHf"/> --><!--"BlWdUONgJoHfaZEhLkFGCcXwMmTyKYR"/>--><!--
+
+	<one fin = "balcony1" inlegend = "BlWdUONgJoHfaZEhLkFGCcXwMmTyKYR" fout = "balcony1-bush" outlegend="BlWdUONgJoHfaZEhLkFGCcXwMmTyKYR"/>-->
+
+
+	<one fin = "EmptyModernHouse" inlegend = ""
+		 fout = "ModernHouseMOD1_800969077" outlegend = ""/>
+	<!--"BlWdUONgJoHfaZEhLkFGCcXwMmTyKYR"/>-->
+
+	<one fin = "balcony1" inlegend = "" fout = "balcony1-bush" outlegend=""/>
+
+
+
+
+
+	<!--<one fin = "ModernHouseMOD1_73618823" inlegend = "BlWdUONgJoHfaZEhLkFGCcXwMmTyKYR"
+		 fout = "ModernHouseMOD1_73618823" outlegend = "BlWdUONgJoHfaZEhLkFGCcXwMmTyKYR"/>-->
+
+	<!--<one fin = "corner" inlegend = "BN" fout = "corner_new" outlegend="BN"/>-->
 
 	<!--<one file = "corner" legend = "BW"/>-->
 

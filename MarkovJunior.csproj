@@ -19,8 +19,6 @@
     <None Include="resources\**\*">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Remove="Class1 %281%29.txt" />
-    <None Remove="Class1 %282%29.txt" />
     <None Include="models.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>

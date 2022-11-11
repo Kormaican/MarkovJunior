@@ -98,61 +98,72 @@ static class VoxHelper {
 
             while (stream.BaseStream.Position < stream.BaseStream.Length)
             {
-                string tag = Encoding.ASCII.GetString(stream.ReadBytes(4));
-
-                int chunkBytes = stream.ReadInt32();
-                int childBytes = stream.ReadInt32();
-
-                
-
-                if (tag.Equals("MAIN"))
-                    continue;
-                if (tag.Equals("PACK"))
+                try
                 {
-                    int modelCount = stream.ReadInt32();
-                }
-                else if (tag.Equals("SIZE"))
-                {
-                    mX = stream.ReadInt32();
-                    mY = stream.ReadInt32();
-                    mZ = stream.ReadInt32();
-                    result = new int[mX * mY * mZ];
-                }
-                else if (tag.Equals("XYZI"))
-                {
-                    int numVoxels = stream.ReadInt32();
-                    for (int i = 0; i < numVoxels; i++)
+                    string tag = Encoding.ASCII.GetString(stream.ReadBytes(4));
+
+                    int chunkBytes = stream.ReadInt32();
+                    int childBytes = stream.ReadInt32();
+
+
+
+                    if (tag.Equals("MAIN"))
+                        continue;
+                    if (tag.Equals("PACK"))
                     {
-                        byte x = stream.ReadByte();
-                        byte y = stream.ReadByte();
-                        byte z = stream.ReadByte();
-                        byte color = stream.ReadByte();
-                        result[x + y * mX + z * mX * mY] = color;
-                        // Console.WriteLine($"adding voxel {x} {y} {z} of color {color}");
+                        int modelCount = stream.ReadInt32();
+                    }
+                    else if (tag.Equals("SIZE"))
+                    {
+                        mX = stream.ReadInt32();
+                        mY = stream.ReadInt32();
+                        mZ = stream.ReadInt32();
+                        result = new int[mX * mY * mZ];
+                    }
+                    else if (tag.Equals("XYZI"))
+                    {
+                        int numVoxels = stream.ReadInt32();
+                        for (int i = 0; i < numVoxels; i++)
+                        {
+                            byte x = stream.ReadByte();
+                            byte y = stream.ReadByte();
+                            byte z = stream.ReadByte();
+                            byte color = stream.ReadByte();
+                            result[x + y * mX + z * mX * mY] = color;
+                            // Console.WriteLine($"adding voxel {x} {y} {z} of color {color}");
+                        }
+                    }
+                    else if (tag.Equals("RGBA"))
+                    {
+                        int[] palette = new int[256];
+                        byte r, g, b;
+                        int color;
+                        for (int i = 0; i < palette.Length; i++)
+                        {
+                            r = stream.ReadByte();
+                            g = stream.ReadByte();
+                            b = stream.ReadByte();
+                            color = stream.ReadByte();
+
+                            color |= b << 8;
+                            color |= g << 16;
+                            color |= r << 24;
+                            //palette.Append(color); // Not sure what this line was for. Maybe it was stale code?
+
+
+                            color = color >> 8 | (255 << 24);
+                            palette_list[i] = color;
+                        }
+
+                    }
+                    else
+                    {
+                        stream.ReadBytes(chunkBytes);
                     }
                 }
-                else if (tag.Equals("RGBA"))
+                catch (System.IO.EndOfStreamException)
                 {
-                    int[] palette = new int[256];
-                    byte r, g, b;
-                    int color;
-                    for (int i = 0; i < palette.Length; i++)
-                    {
-                        r = stream.ReadByte();
-                        g = stream.ReadByte();
-                        b = stream.ReadByte();
-                        color = stream.ReadByte();
-                        color |= b << 8;
-                        color |= g << 16;
-                        color |= r << 24;
-                        palette.Append(color); // Not sure what this line was for. Maybe it was stale code?
-                        palette_list[i] = color;
-                    }
-
-                }
-                else
-                {
-                    stream.ReadBytes(chunkBytes);
+                    break;
                 }
             }
             file.Close();
@@ -228,5 +239,22 @@ static class VoxHelper {
         }
         stream.Write(0);
         file.Close();
+    }
+
+    public static string MakeLegend(int[] mpalette)
+    {
+        string legend = "";
+        for (int i = 0; i < mpalette.Length; i++)
+        {
+            try
+            {
+                legend += paletteGlobalSwapped[mpalette[i]];
+            }
+            catch (System.Collections.Generic.KeyNotFoundException) {
+                legend += "B"; // For now, using B as placeholder in the legend for broken parts of the vox.
+            }
+    }
+
+        return legend;
     }
 }
